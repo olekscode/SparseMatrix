@@ -3,6 +3,10 @@
 
 #include <exception>
 
+/**
+ * @brief Exception that is thrown when trying to multiply the
+ * CSR or CSIR matrix on vector of the invalid size
+ */
 class MultSizeMismatch : public std::exception
 {
 public:

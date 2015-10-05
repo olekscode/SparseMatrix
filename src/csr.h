@@ -10,6 +10,12 @@
  * @details Sparse matrix format for asymmetric matrices
  * with asymmetric portraits.
  * 
+ * Matrix is stored in following vectors:
+ * - aelem - nonempty elements of matrix
+ * - iptr - i-th element holds the position in which the i-th
+ * row appears in aelem for the first time
+ * - jptr - column-indices of the corresponding aelem elements
+ * 
  * @tparam T Type of data stored in matrix.
  */
 template <typename T>
@@ -134,72 +140,71 @@ public:
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets aelem - an array of nonempty elements
+	 * of matrix
+	 * @return aelem array
+	 */
     T* aelem() const
     {
         return _aelem;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets the iptr - an array of position in which the
+	 * corresponding rows appear in aelem for the first time
+	 * @return iptr array
+	 */
     int* iptr() const
     {
         return _iptr;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets column-indices of the corresponding aelem
+	 * elements
+	 * @return jptr array
+	 */
     int* jptr() const
     {
         return _jptr;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets the number of rows in matrix
+	 * @return Number of rows
+	 */
     int rows() const
     {
         return _rows;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets the number of columns in matrix
+	 * @return Number of columns
+	 */
     int cols() const
     {
         return _cols;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * @return [description]
-     */
+	 * @brief Gets size of aelem - number of nonempty elements
+	 * in matrix
+	 * @return Size of aelem
+	 */
     int size_of_aelem() const
     {
         return _size_of_aelem;
     }
 
     /**
-     * @brief [brief description]
-     * @details [long description]
-     * 
-     * @param vec [description]
-     * @return [description]
-     */
+	 * @brief Multiplies CSR matrix by vector.
+	 * @details Note that for large sparse matrices this
+	 * multiplication will be extremely efficient.
+	 * 
+	 * @param vec Given vector
+	 * @return Result of multiplication
+	 */
     std::vector<T> operator* (std::vector<T> &vec)
     {
         if (vec.size() != _cols) {

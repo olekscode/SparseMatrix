@@ -6,6 +6,14 @@
  * @details Sparse matrix format for asymmetric matrices
  * with symmetric portraits. A.k.a. Skyline format.
  * 
+ * Matrix is stored in following vectors:
+ * - adiag - diagonal elements
+ * - altr - nonempty elements of lower triangular matrix
+ * - autr - nonempty elements of upper triangular matrix
+ * - iptr - i-th element holds the position in which the i-th
+ * row appears in altr for the first time
+ * - jptr - column-indices of the corresponding altr elements
+ * 
  * @tparam T - Type of data stored in matrix.
  */
 template <typename T>
@@ -143,9 +151,8 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets adiag - an array of diagonal elements
+	 * @return adiag array
 	 */
 	T* adiag() const
 	{
@@ -153,9 +160,9 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets altr - an array of nonempty elements of
+	 * lower triangular matrix
+	 * @return altr array
 	 */
 	T* altr() const
 	{
@@ -163,9 +170,9 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets autr - an array of nonempty elements of
+	 * upper triangular matrix
+	 * @return autr array
 	 */
 	T* autr() const
 	{
@@ -173,9 +180,9 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets the iptr - an array of position in which the
+	 * corresponding rows appear in altr for the first time
+	 * @return iptr array
 	 */
 	int* iptr() const
 	{
@@ -183,9 +190,9 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets column-indices of the corresponding altr
+	 * elements
+	 * @return jptr array
 	 */
 	int* jptr() const
 	{
@@ -193,9 +200,8 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets size of matrix (number of rows)
+	 * @return Size of matrix
 	 */
 	int size() const
 	{
@@ -203,9 +209,9 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
-	 * @return [description]
+	 * @brief Gets size of altr - number of nonempty elements
+	 * in lower triangular matrix
+	 * @return Size of altr
 	 */
 	int size_of_altr() const
 	{
@@ -213,11 +219,12 @@ public:
 	}
 
 	/**
-	 * @brief [brief description]
-	 * @details [long description]
+	 * @brief Multiplies CSIR matrix by vector.
+	 * @details Note that for large sparse matrices this
+	 * multiplication will be extremely efficient.
 	 * 
-	 * @param vec [description]
-	 * @return [description]
+	 * @param vec Given vector
+	 * @return Result of multiplication
 	 */
 	std::vector<T> operator* (std::vector<T> &vec)
 	{
