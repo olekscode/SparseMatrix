@@ -1,6 +1,10 @@
 #ifndef CSR_H
 #define CSR_H
 
+#include <vector>
+
+#include "exception.h"
+
 /**
  * @brief CSR - Compressed Sparse Row.
  * @details Sparse matrix format for asymmetric matrices
@@ -187,6 +191,32 @@ public:
 	int size_of_aelem() const
 	{
 		return _size_of_aelem;
+	}
+
+	/**
+	 * @brief [brief description]
+	 * @details [long description]
+	 * 
+	 * @param vec [description]
+	 * @return [description]
+	 */
+	std::vector<T> operator* (std::vector<T> &vec)
+	{
+		if (vec.size() != _cols) {
+			throw MultSizeMismatch();
+		}
+
+		std::vector<T> res(_rows);
+
+		for (int i = 0; i < _rows; ++i) {
+			res.at(i) = 0;
+
+			for (int j = _iptr[i]; j < _iptr[i + 1]; ++j) {
+				res.at(i) += _aelem[j] * vec.at(_jptr[j]);
+			}
+		}
+
+		return res;
 	}
 };
 

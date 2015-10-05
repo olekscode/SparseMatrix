@@ -211,6 +211,33 @@ public:
 	{
 		return _size_of_altr;
 	}
+
+	/**
+	 * @brief [brief description]
+	 * @details [long description]
+	 * 
+	 * @param vec [description]
+	 * @return [description]
+	 */
+	std::vector<T> operator* (std::vector<T> &vec)
+	{
+		if (vec.size() != _size) {
+			throw MultSizeMismatch();
+		}
+
+		std::vector<T> res(_size);
+
+		for (int i = 0; i < _size; ++i) {
+			res.at(i) = _adiag[i] * vec.at(i);
+
+			for (int j = _iptr[i]; j < _iptr[i + 1]; ++j) {
+				res.at(i) += _altr[j] * vec.at(_jptr[j]);
+				res.at(_jptr[j]) += _autr[j] * vec.at(i);
+			}
+		}
+
+		return res;
+	}
 };
 
 #endif // CSIR_H
