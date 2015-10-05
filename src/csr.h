@@ -75,6 +75,61 @@ public:
 	}
 
 	/**
+	 * @brief Copies the data of CSR sparse matrix
+	 * from other CSR matrix
+	 * 
+	 * @param other Reference to other CSR matrix
+	 */
+	CSR(CSR &other)
+	{
+		_rows = other._rows;
+		_cols = other._cols;
+		_size_of_aelem = other._size_of_aelem;
+
+		_aelem = new T[_size_of_aelem];
+		_iptr = new int[_rows];
+		_jptr = new int[_size_of_aelem];
+
+		for (int i = 0; i < _rows; ++i) {
+			_iptr[i] = other._iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_aelem; ++i) {
+			_aelem[i] = other._aelem[i];
+			_jptr[i] = other._jptr[i];
+		}
+	}
+
+	/**
+	 * @brief Assignes an instance of CSR sparse matrix with
+	 * other CSR matrix.
+	 * @details Copies all the data from other matrix
+	 * 
+	 * @param other Reference to other CSR matrix
+	 */
+	CSR& operator= (CSR &other)
+	{
+		_rows = other._rows;
+		_cols = other._cols;
+		_size_of_aelem = other._size_of_aelem;
+
+		_aelem = new T[_size_of_aelem];
+		_iptr = new int[_rows];
+		_jptr = new int[_size_of_aelem];
+
+		for (int i = 0; i < _rows; ++i) {
+			_iptr[i] = other._iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_aelem; ++i) {
+			_aelem[i] = other._aelem[i];
+			_jptr[i] = other._jptr[i];
+		}
+
+		return *this;
+	}
+
+	/**
 	 * @brief [brief description]
 	 * @details [long description]
 	 * @return [description]
@@ -109,7 +164,7 @@ public:
 	 * @details [long description]
 	 * @return [description]
 	 */
-	virtual int rows() const
+	int rows() const
 	{
 		return _rows;
 	}
@@ -119,7 +174,7 @@ public:
 	 * @details [long description]
 	 * @return [description]
 	 */
-	virtual int cols() const
+	int cols() const
 	{
 		return _cols;
 	}
@@ -129,7 +184,7 @@ public:
 	 * @details [long description]
 	 * @return [description]
 	 */
-	virtual int size_of_aelem() const
+	int size_of_aelem() const
 	{
 		return _size_of_aelem;
 	}

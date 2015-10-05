@@ -82,6 +82,67 @@ public:
 	}
 
 	/**
+	 * @brief Copies the data of CSIR sparse matrix
+	 * from other CSIR matrix
+	 * 
+	 * @param other Reference to other CSIR matrix
+	 */
+	CSIR(CSIR &other)
+	{
+		_size = other._size;
+		_size_of_altr = other._size_of_altr;
+
+		_adiag = new T[_size];
+		_altr = new T[_size_of_altr];
+		_autr = new T[_size_of_altr];
+		_iptr = new int[_size];
+		_jptr = new int[_size_of_altr];
+
+		for (int i = 0; i < _size; ++i) {
+			_adiag[i] = other._adiag[i];
+			_iptr[i] = other._iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_altr; ++i) {
+			_altr[i] = other._altr[i];
+			_autr[i] = other._autr[i];
+			_jptr[i] = other._jptr[i];
+		}
+	}
+
+	/**
+	 * @brief Assignes an instance of CSIR sparse matrix with
+	 * other CSIR matrix.
+	 * @details Copies all the data from other matrix
+	 * 
+	 * @param other Reference to other CSIR matrix
+	 */
+	CSIR& operator= (CSIR &other)
+	{
+		_size = other._size;
+		_size_of_altr = other._size_of_altr;
+
+		_adiag = new T[_size];
+		_altr = new T[_size_of_altr];
+		_autr = new T[_size_of_altr];
+		_iptr = new int[_size];
+		_jptr = new int[_size_of_altr];
+
+		for (int i = 0; i < _size; ++i) {
+			_adiag[i] = other._adiag[i];
+			_iptr[i] = other._iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_altr; ++i) {
+			_altr[i] = other._altr[i];
+			_autr[i] = other._autr[i];
+			_jptr[i] = other._jptr[i];
+		}
+
+		return *this;
+	}
+
+	/**
 	 * @brief [brief description]
 	 * @details [long description]
 	 * @return [description]
@@ -136,7 +197,7 @@ public:
 	 * @details [long description]
 	 * @return [description]
 	 */
-	virtual int size() const
+	int size() const
 	{
 		return _size;
 	}
@@ -146,7 +207,7 @@ public:
 	 * @details [long description]
 	 * @return [description]
 	 */
-	virtual int size_of_altr() const
+	int size_of_altr() const
 	{
 		return _size_of_altr;
 	}
