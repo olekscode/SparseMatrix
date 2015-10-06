@@ -1,6 +1,10 @@
 #ifndef CSIR_H
 #define CSIR_H
 
+#include <vector>
+
+#include "csr.h"
+
 /**
  * @brief CSIR - Compressed Sparse (lower triangle) Row.
  * @details Sparse matrix format for asymmetric matrices
@@ -23,11 +27,11 @@ class CSIR
 	T* _altr;
 	T* _autr;
 
-	int _size;
-	int _size_of_altr;
-
 	int *_jptr;
 	int *_iptr;
+
+	int _size;
+	int _size_of_altr;
 
 public:
 	/**
@@ -244,6 +248,56 @@ public:
 		}
 
 		return res;
+	}
+
+	/**
+	 * @brief [brief description]
+	 * @details [long description]
+	 * 
+	 * @param other [description]
+	 * @return [description]
+	 */
+	CSIR<T> operator* (CSIR<T> &other)
+	{
+		if (other._size != _size) {
+			throw MultSizeMismatch();
+		}
+
+		
+	}
+
+private:
+	/**
+	 * @brief Creates an instance of CSIR matrix using 
+	 * CSIR-arrays, received as pagameters, instead of extracting
+	 * them from plain matrix.
+	 * @details Not accessible from outside the class but makes
+	 * some operations inside much more efficient.
+	 * For example, multiplication by other CSIR
+	 */
+	CSIR(T *adiag, T *altr, T *autr,
+		 int *iptr, int *jptr,
+		 int size, int size_of_altr)
+	{
+		_size = size;
+		_size_of_altr = size_of_altr;
+
+		_adiag = new T[_size];
+		_altr = new T[_size_of_altr];
+		_autr = new T[_size_of_altr];
+		_iptr = new int[_size];
+		_jptr = new int[_size_of_altr];
+
+		for (int i = 0; i < _size; ++i) {
+			_adiag[i] = adiag[i];
+			_iptr[i] = iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_altr; ++i) {
+			_altr[i] = altr[i];
+			_autr[i] = autr[i];
+			_jptr[i] = jptr[i];
+		}
 	}
 };
 
