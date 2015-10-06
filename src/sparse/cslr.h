@@ -1,8 +1,8 @@
-#ifndef CSIR_H
-#define CSIR_H
+#ifndef CSLR_H
+#define CSLR_H
 
 /**
- * @brief CSIR - Compressed Sparse (lower triangle) Row.
+ * @brief CSLR - Compressed Sparse (lower triangle) Row.
  * @details Sparse matrix format for asymmetric matrices
  * with symmetric portraits. A.k.a. Skyline format.
  * 
@@ -17,7 +17,7 @@
  * @tparam T - Type of data stored in matrix.
  */
 template <typename T>
-class CSIR
+class CSLR
 {
 	T* _adiag;
 	T* _altr;
@@ -29,19 +29,24 @@ class CSIR
 	int *_jptr;
 	int *_iptr;
 
+	T _eval;
+
 public:
 	/**
-	 * @brief Creates an instance of CSIR sparse matrix
-	 * @details Parses a given plain symmetricmatrix into a CSIR format.
+	 * @brief Creates an instance of CSLR matrix
+	 * @details Parses a given plain symmetricmatrix into a CSLR format.
 	 * Note that all the diagonal elements are treated as nonempty.
+	 * This constructor is time-expensive and therefore useful only for
+	 * testing on small matrices
 	 * 
 	 * @param mtrx Plain symmetric matrix
-	 * @param eval Empty value
 	 * @param size Size of matrix (number of rows)
+	 * @param eval Empty value
 	 */
-	CSIR(T **mtrx, T eval, int size)
+	CSLR(T **mtrx, int size, T eval = 0)
 	{
 		_size = size;
+		_eval = eval;
 
 		_adiag = new T[_size];
 		_iptr = new int[_size + 1];
@@ -54,7 +59,7 @@ public:
 			_iptr[i] = _size_of_altr;
 
 			for (int j = 0; j < i; ++j) {
-				if (mtrx[i][j] != eval) {
+				if (mtrx[i][j] != _eval) {
 					jptr_buff[_size_of_altr++] = j;
 				}
 			}
@@ -78,27 +83,99 @@ public:
 	}
 
 	/**
-	 * @brief Deletes an instance of CSR sparse matrix
+	 * @brief Creates an instance of CSLR matrix
+	 * @details All the CSLR members are passed dirrectly as arguments
+	 * 
+	 * @param adiag Array of diagonal elements (treated as nonempty)
+	 * @param altr Array of nonempty elements of lower triangular matrix
+	 * @param autr Array of nonempty elements of upper triangular matrix
+	 * @param iptr Array of position in which the corresponding rows
+	 * appear in altr for the first time
+	 * @param jptr Array of column-indices of the corresponding
+	 * nonempty elements of lower triangular matrix
+	 * @param size Size of matrix (number of rows)
+	 * @param size_of_altr Number of nonempty elements in lower
+	 * triangular matrix
+	 * @param eval Empty value
 	 */
-	~CSIR()
+	CSLR(T *adiag, T *altr, T *autr, int *iptr, int *jptr,
+		 int size, int size_of_altr, T eval = 0)
 	{
-		delete[] _adiag;
-		delete[] _altr;
-		delete[] _autr;
-		delete[] _iptr;
-		delete[] _jptr;
+		_size = size;
+		_size_of_altr = size_of_altr;
+		_eval = eval;
+
+		_adiag = new T[_size];
+		_altr = new T[_size_of_altr];
+		_autr = new T[_size_of_altr];
+		_iptr = new int[_size];
+		_jptr = new int[_size_of_altr];
+
+		for (int i = 0; i < _size; ++i) {
+			_adiag[i] = adiag[i];
+			_iptr[i] = iptr[i];
+		}
+
+		for (int i = 0; i < _size_of_altr; ++i) {
+			_altr[i] = altr[i];
+			_autr[i] = autr[i];
+			_jptr[i] = jptr[i];
+		}
 	}
 
 	/**
-	 * @brief Copies the data of CSIR sparse matrix
-	 * from other CSIR matrix
+	 * @brief Creates an instance of empty CSLR matrix
+	 * @details Stores indices of all nonempty elements and
+	 * allocates memory for their values (_adiag, _altr and _autr).
+	 * Actual values are left empty (assigneg with eval)
 	 * 
-	 * @param other Reference to other CSIR matrix
+	 * @param num_in_ltrows Array of numbers of nonempty elements
+	 * in the corresponding rows of lower triangular matrix
+	 * @param jptr Array of column-indices of the corresponding
+	 * nonempty elements of lower triangular matrix
+	 * @param size Size of matrix (number of rows)
+	 * @param eval Empty value
 	 */
-	CSIR(CSIR &other)
+	CSLR(int *num_in_ltrows, int *jptr, int size, T eval = 0)
+	{
+		_size = size;
+		_eval = eval;
+
+		_adiag = new T[_size];
+		_iptr = new int[_size + 1];
+
+		int _size_of_altr = 0;
+
+		for (int i = 0; i < _size; ++i) {
+			_iptr[i] = _size_of_altr;
+			_size_of_altr += num_in_ltrows[i];
+			_adiag[i] = 0;
+		}
+
+		_iptr[_size] = _size_of_altr;
+
+		_altr = new T[_size_of_altr];
+		_autr = new T[_size_of_altr];
+		_jptr = new int[_size_of_altr];
+
+		for (int i = 0; i < _size_of_altr; ++i) {
+			_altr[i] = 0;
+			_autr[i] = 0;
+			_jptr[i] = jptr[i];
+		}
+	}
+
+	/**
+	 * @brief Copies the data of CSLR matrix
+	 * from other CSLR matrix
+	 * 
+	 * @param other Reference to other CSLR matrix
+	 */
+	CSLR(CSLR &other)
 	{
 		_size = other._size;
 		_size_of_altr = other._size_of_altr;
+		_eval = other._eval;
 
 		_adiag = new T[_size];
 		_altr = new T[_size_of_altr];
@@ -119,16 +196,29 @@ public:
 	}
 
 	/**
-	 * @brief Assignes an instance of CSIR sparse matrix with
-	 * other CSIR matrix.
+	 * @brief Deletes an instance of CSLR matrix
+	 */
+	~CSLR()
+	{
+		delete[] _adiag;
+		delete[] _altr;
+		delete[] _autr;
+		delete[] _iptr;
+		delete[] _jptr;
+	}
+
+	/**
+	 * @brief Assignes an instance of CSLR matrix with
+	 * other CSLR matrix.
 	 * @details Copies all the data from other matrix
 	 * 
-	 * @param other Reference to other CSIR matrix
+	 * @param other Reference to other CSLR matrix
 	 */
-	CSIR& operator= (CSIR &other)
+	CSLR& operator= (CSLR &other)
 	{
 		_size = other._size;
 		_size_of_altr = other._size_of_altr;
+		_eval = other._eval;
 
 		_adiag = new T[_size];
 		_altr = new T[_size_of_altr];
@@ -219,7 +309,7 @@ public:
 	}
 
 	/**
-	 * @brief Multiplies CSIR matrix by vector.
+	 * @brief Multiplies CSLR matrix by vector.
 	 * @details Note that for large sparse matrices this
 	 * multiplication will be extremely efficient.
 	 * 
@@ -247,4 +337,4 @@ public:
 	}
 };
 
-#endif // CSIR_H
+#endif // CSLR_H

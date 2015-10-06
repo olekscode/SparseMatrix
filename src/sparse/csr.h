@@ -29,20 +29,25 @@ class CSR
     int _rows;
     int _cols;
 
+    T _eval;
+
 public:
     /**
      * @brief Creates an instance of CSR sparse matrix
      * @details Parses a given plain matrix into a CSR format
+     * This constructor is time-expensive and therefore useful only for
+     * testing on small matrices
      * 
      * @param mtrx Plain matrix
-     * @param eval Empty value
      * @param rows Number of rows in matrix
      * @param cols Number of columns in matrix
+     * @param eval Empty value
      */
-    CSR(T **mtrx, T eval, int rows, int cols = 0)
+    CSR(T **mtrx, int rows, int cols, T eval = 0)
     {
         _rows = rows;
         _cols = (cols == 0) ? rows : cols;
+        _eval = 0;
 
         _iptr = new int[_rows + 1];
         int *jptr_buff = new int[_rows * _cols];
@@ -75,16 +80,6 @@ public:
     }
 
     /**
-     * @brief Deletes an instance of CSR sparse matrix
-     */
-    ~CSR()
-    {
-        delete[] _aelem;
-        delete[] _iptr;
-        delete[] _jptr;
-    }
-
-    /**
      * @brief Copies the data of CSR sparse matrix
      * from other CSR matrix
      * 
@@ -95,6 +90,7 @@ public:
         _rows = other._rows;
         _cols = other._cols;
         _size_of_aelem = other._size_of_aelem;
+        _eval = other._eval;
 
         _aelem = new T[_size_of_aelem];
         _iptr = new int[_rows];
@@ -111,6 +107,92 @@ public:
     }
 
     /**
+     * @brief Creates an instance of CSR matrix
+     * @details All the CSR members are passed dirrectly as arguments
+     * 
+     * @param aelem Array of nonempty elements
+     * @param iptr Array of position in which the corresponding rows
+     * appear in aelem for the first time
+     * @param jptr Array of column-indices of the corresponding
+     * nonempty elements
+     * @param rows Number of rows
+     * @param cols Number of columns
+     * @param size_of_aelem Number of nonempty elements
+     * @param eval Empty value
+     */
+    CSR(T *aelem, int *iptr, int *jptr,
+         int rows, int cols, int size_of_aelem, T eval = 0)
+    {
+        _rows = rows;
+        _cols = cols;
+        _size_of_aelem = size_of_aelem;
+        _eval = eval;
+
+        _aelem = new T[_size_of_aelem];
+        _iptr = new int[_rows];
+        _jptr = new int[_size_of_aelem];
+
+        for (int i = 0; i < _rows; ++i) {
+            _iptr[i] = iptr[i];
+        }
+
+        for (int i = 0; i < _size_of_aelem; ++i) {
+            _aelem[i] = aelem[i];
+            _jptr[i] = jptr[i];
+        }
+    }
+
+    /**
+     * @brief Creates an instance of empty CSR matrix
+     * @details Stores indices of all nonempty elements and
+     * allocates memory for their values (_aelem).
+     * Actual values are left empty (assigneg with eval)
+     * 
+     * @param num_in_rows Array of numbers of nonempty elements
+     * in the corresponding rows
+     * @param jptr Array of column-indices of the corresponding
+     * nonempty elements
+     * @param rows Number of rows
+     * @param cols Number of columns
+     * @param eval Empty value
+     */
+    CSR(int *num_in_rows, int *jptr, int rows, int cols, T eval = 0)
+    {
+        _rows = rows;
+        _cols = cols;
+        _eval = eval;
+
+        _iptr = new int[_rows + 1];
+
+        int _size_of_aelem = 0;
+
+        for (int i = 0; i < _rows; ++i) {
+            _iptr[i] = _size_of_aelem;
+            _size_of_aelem += num_in_rows[i];
+        }
+
+        _iptr[_rows] = _size_of_aelem;
+
+        _aelem = new T[_size_of_aelem];
+        _jptr = new int[_size_of_aelem];
+
+        for (int i = 0; i < _size_of_aelem; ++i) {
+            _aelem[i] = 0;
+            _jptr[i] = jptr[i];
+        }
+    }
+
+    /**
+     * @brief Deletes an instance of CSR sparse matrix
+     */
+    ~CSR()
+    {
+        delete[] _aelem;
+        delete[] _iptr;
+        delete[] _jptr;
+    }
+
+    /**
      * @brief Assignes an instance of CSR sparse matrix with
      * other CSR matrix.
      * @details Copies all the data from other matrix
@@ -122,6 +204,7 @@ public:
         _rows = other._rows;
         _cols = other._cols;
         _size_of_aelem = other._size_of_aelem;
+        _eval = other._eval;
 
         _aelem = new T[_size_of_aelem];
         _iptr = new int[_rows];
@@ -214,7 +297,7 @@ public:
         std::vector<T> res(_rows);
 
         for (int i = 0; i < _rows; ++i) {
-            res.at(i) = 0;
+            res.at(i) = _eval;
 
             for (int j = _iptr[i]; j < _iptr[i + 1]; ++j) {
                 res.at(i) += _aelem[j] * vec.at(_jptr[j]);
