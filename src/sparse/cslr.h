@@ -1,6 +1,10 @@
 #ifndef CSLR_H
 #define CSLR_H
 
+#include <vector>
+
+#include "exception.h"
+
 /**
  * @brief CSLR - Compressed Sparse (lower triangle) Row.
  * @details Sparse matrix format for asymmetric matrices
