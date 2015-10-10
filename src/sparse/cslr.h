@@ -1,3 +1,6 @@
+// TODO: _iptr should contain _size elements, not _size + 1
+// 		 (lower triangular matrix starts from the second row)
+
 #ifndef CSLR_H
 #define CSLR_H
 
@@ -148,7 +151,7 @@ public:
 		_adiag = new T[_size];
 		_iptr = new int[_size + 1];
 
-		int _size_of_altr = 0;
+		_size_of_altr = 0;
 
 		for (int i = 0; i < _size; ++i) {
 			_iptr[i] = _size_of_altr;
@@ -175,7 +178,7 @@ public:
 	 * 
 	 * @param other Reference to other CSLR matrix
 	 */
-	CSLR(CSLR &other)
+	CSLR(const CSLR &other)
 	{
 		_size = other._size;
 		_size_of_altr = other._size_of_altr;
@@ -218,7 +221,7 @@ public:
 	 * 
 	 * @param other Reference to other CSLR matrix
 	 */
-	CSLR& operator= (CSLR &other)
+	CSLR& operator= (const CSLR &other)
 	{
 		_size = other._size;
 		_size_of_altr = other._size_of_altr;
@@ -310,6 +313,43 @@ public:
 	int size_of_altr() const
 	{
 		return _size_of_altr;
+	}
+
+	/**
+	 * @brief Inserts an element to the matrix
+	 * @details The space for this element should already
+	 * be allocated by CSLR(int*, int*, int, T) constructor.
+	 * If not - an error will be thrown.
+	 * 
+	 * @param val Value to be inserted
+	 * @param i Row-index
+	 * @param j Column-index
+	 */
+	void insert(T val, int i, int j)
+	{
+		// TODO: Make it cleaner
+
+		if (i > j) {
+			for (int k = _iptr[i]; k < _iptr[i + 1]; ++k) {
+				if (_jptr[k] == j) {
+					_altr[k] = val;
+					return;
+				}
+			}
+			throw InsertNoSuchElement(i, j);
+		}
+		else if (i < j) {
+			for (int k = _iptr[j]; k < _iptr[j + 1]; ++k) {
+				if (_jptr[k] == i) {
+					_autr[k] = val;
+					return;
+				}
+			}
+			throw InsertNoSuchElement(i, j);
+		}
+		else {
+			_adiag[i] = val;
+		}
 	}
 
 	/**

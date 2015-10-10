@@ -85,7 +85,7 @@ public:
      * 
      * @param other Reference to other CSR matrix
      */
-    CSR(CSR &other)
+    CSR(const CSR &other)
     {
         _rows = other._rows;
         _cols = other._cols;
@@ -164,7 +164,7 @@ public:
 
         _iptr = new int[_rows + 1];
 
-        int _size_of_aelem = 0;
+        _size_of_aelem = 0;
 
         for (int i = 0; i < _rows; ++i) {
             _iptr[i] = _size_of_aelem;
@@ -199,7 +199,7 @@ public:
      * 
      * @param other Reference to other CSR matrix
      */
-    CSR& operator= (CSR &other)
+    CSR& operator= (const CSR &other)
     {
         _rows = other._rows;
         _cols = other._cols;
