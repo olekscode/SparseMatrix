@@ -100,6 +100,8 @@ public:
             _iptr[i] = other._iptr[i];
         }
 
+        _iptr[_rows] = other._iptr[_rows];
+
         for (int i = 0; i < _size_of_aelem; ++i) {
             _aelem[i] = other._aelem[i];
             _jptr[i] = other._jptr[i];
@@ -135,6 +137,8 @@ public:
         for (int i = 0; i < _rows; ++i) {
             _iptr[i] = iptr[i];
         }
+
+        _iptr[_rows] = iptr[_rows];
 
         for (int i = 0; i < _size_of_aelem; ++i) {
             _aelem[i] = aelem[i];
@@ -214,6 +218,8 @@ public:
             _iptr[i] = other._iptr[i];
         }
 
+        _iptr[_rows] = other._iptr[_rows];
+
         for (int i = 0; i < _size_of_aelem; ++i) {
             _aelem[i] = other._aelem[i];
             _jptr[i] = other._jptr[i];
@@ -278,6 +284,32 @@ public:
     int size_of_aelem() const
     {
         return _size_of_aelem;
+    }
+
+    /**
+     * @brief Inserts an element to the matrix
+     * @details The space for this element should already
+     * be allocated by CSR(int*, int*, int, int, T) constructor.
+     * If not - an error will be thrown.
+     * 
+     * @param val Value to be inserted
+     * @param i Row-index
+     * @param j Column-index
+     */
+    void insert(T val, int i, int j)
+    {
+        // TODO: Make it cleaner
+
+        for (int k = _iptr[i]; k < _iptr[i + 1]; ++k) {
+            if (_jptr[k] == j) {
+                _aelem[k] = val;
+                return;
+            }
+            else if (_jptr[k] > j) {
+                break;
+            }
+        }
+        throw InsertNoSuchElement(i, j);
     }
 
     /**

@@ -123,6 +123,8 @@ public:
 			_iptr[i] = iptr[i];
 		}
 
+		_iptr[_size] = iptr[_size];
+
 		for (int i = 0; i < _size_of_altr; ++i) {
 			_altr[i] = altr[i];
 			_autr[i] = autr[i];
@@ -195,6 +197,8 @@ public:
 			_iptr[i] = other._iptr[i];
 		}
 
+		_iptr[_size] = other._iptr[_size];
+
 		for (int i = 0; i < _size_of_altr; ++i) {
 			_altr[i] = other._altr[i];
 			_autr[i] = other._autr[i];
@@ -237,6 +241,8 @@ public:
 			_adiag[i] = other._adiag[i];
 			_iptr[i] = other._iptr[i];
 		}
+
+		_iptr[_size] = other._iptr[_size];
 
 		for (int i = 0; i < _size_of_altr; ++i) {
 			_altr[i] = other._altr[i];
@@ -335,6 +341,9 @@ public:
 					_altr[k] = val;
 					return;
 				}
+				else if (_jptr[k] > j) {
+					break;
+				}
 			}
 			throw InsertNoSuchElement(i, j);
 		}
@@ -343,6 +352,9 @@ public:
 				if (_jptr[k] == i) {
 					_autr[k] = val;
 					return;
+				}
+				else if (_jptr[k] > j) {
+					break;
 				}
 			}
 			throw InsertNoSuchElement(i, j);
