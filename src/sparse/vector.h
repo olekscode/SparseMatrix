@@ -5,7 +5,7 @@
 #include "exception.h"
 
 /**
- * @brief Reimplemented mathematical vector
+ * @brief Reimplementation of mathematical vector
  * @details Provides basic arithmetic operators
  * 
  * @tparam T Type of data stored in vector 

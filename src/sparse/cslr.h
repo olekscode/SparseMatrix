@@ -42,7 +42,7 @@ class CSLR
 public:
 	/**
 	 * @brief Creates an instance of CSLR matrix
-	 * @details Parses a given plain symmetricmatrix into a CSLR format.
+	 * @details Parses a given plain symmetric matrix into a CSLR format.
 	 * Note that all the diagonal elements are treated as nonempty.
 	 * This constructor is time-expensive and therefore useful only for
 	 * testing on small matrices
