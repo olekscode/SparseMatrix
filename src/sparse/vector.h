@@ -107,40 +107,39 @@ public:
 		return res;
 	}
 
+	template <typename S>
+	Vector operator* (const S &val) const
+	{
+		Vector res(this->_size);
 
-	template <typename>
-	friend Vector operator* (const Vector &vec, const T &val);
+		for (int i = 0; i < this->_size; ++i) {
+			res._arr[i] = _arr[i] * val;
+		}
+
+		return res;
+	}
 	
-	template <typename>
-	friend Vector operator/ (const Vector &vec, const T &val);
+	template <typename S>
+	Vector operator/ (const S &val) const
+	{
+		if (val == 0) {
+			throw DivideByZero();
+		}
+
+		Vector<T> res(this->_size);
+
+		for (int i = 0; i < this->_size; ++i) {
+			res._arr[i] = _arr[i] / val;
+		}
+
+		return res;
+	}
 };
 
-template <typename T>
-Vector<T> operator* (const Vector<T> &vec, const T &val)
+template <typename T, typename S>
+Vector<T> operator* (const S &val, const Vector<T> &vec)
 {
-	Vector<T> res(vec._size);
-
-	for (int i = 0; i < vec._size; ++i) {
-		res._arr[i] = vec._arr[i] * val;
-	}
-
-	return res;
-}
-
-template <typename T>
-Vector<T> operator/ (const Vector<T> &vec, const T &val)
-{
-	if (val == 0) {
-		throw DivideByZero();
-	}
-
-	Vector<T> res(vec._size);
-
-	for (int i = 0; i < vec._size; ++i) {
-		res._arr[i] = vec._arr[i] / val;
-	}
-
-	return res;
+	return vec * val;
 }
 
 #endif // VECTOR_H
