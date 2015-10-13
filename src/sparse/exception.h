@@ -42,4 +42,44 @@ public:
 	}
 };
 
+/**
+ * @brief Exception that is thrown when Vector or SparseVector
+ * gets out of range
+ */
+class VecOutOfRange : public std::exception
+{
+public:
+	const char* what() const throw()
+	{
+		return "Vector got out of range";
+	}
+};
+
+/**
+ * @brief Exception that is thrown when trying to apply an
+ * arithmetic operation to Vector-s or SparseVector-s of
+ * unsuitable sizes
+ */
+class VecSizeMismatch : public std::exception
+{
+public:
+	const char* what() const throw()
+	{
+		return "Cannot apply arithmetic operations: sizes of " \
+			   "operands don't match";
+	}
+};
+
+/**
+ * @brief Exception that is thrown when trying to divide by zero
+ */
+class DivideByZero : public std::exception
+{
+public:
+	const char* what() const throw()
+	{
+		return "Division by zero";
+	}
+};
+
 #endif // EXCEPTION_H

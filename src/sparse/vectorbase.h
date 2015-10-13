@@ -11,6 +11,7 @@ protected:
 	int _size;
 
 public:
+	VectorBase() {}
 	VectorBase(int size)
 		: _size(size) {}
 
@@ -23,6 +24,9 @@ public:
 
 	virtual T& operator[] (int index) = 0;
 	virtual T& at(int index) = 0;
+
+	// Not sure if it's a good idea
+	virtual T get(int index) const = 0;
 
 	virtual void insert(const T &val, int index) = 0;
 };

@@ -4,8 +4,9 @@
 #ifndef CSLR_H
 #define CSLR_H
 
-#include <vector>
+//#include <vector>
 
+#include "vector.h"
 #include "exception.h"
 
 /**
@@ -372,20 +373,20 @@ public:
 	 * @param vec Given vector
 	 * @return Result of multiplication
 	 */
-	std::vector<T> operator* (std::vector<T> &vec)
+	Vector<T> operator* (const Vector<T> &vec)
 	{
 		if (vec.size() != _size) {
 			throw MultSizeMismatch();
 		}
 
-		std::vector<T> res(_size);
+		Vector<T> res(_size);
 
 		for (int i = 0; i < _size; ++i) {
-			res.at(i) = _adiag[i] * vec.at(i);
+			res[i] = _adiag[i] * vec.get(i);
 
 			for (int j = _iptr[i]; j < _iptr[i + 1]; ++j) {
-				res.at(i) += _altr[j] * vec.at(_jptr[j]);
-				res.at(_jptr[j]) += _autr[j] * vec.at(i);
+				res[i] += _altr[j] * vec.get(_jptr[j]);
+				res[_jptr[j]] += _autr[j] * vec.get(i);
 			}
 		}
 
